@@ -224,7 +224,7 @@ export default function DicteeScreen() {
 
         <View style={styles.settingsBadge}>
           <Text style={styles.settingsBadgeText}>
-            {VOICE_LABELS[settings.voiceType]} · {VITESSE_LABELS[settings.vitesse]}
+            {VOICE_LABELS[settings.voiceType]} · {settings.vitesse.toFixed(1)}×
           </Text>
         </View>
       </View>
