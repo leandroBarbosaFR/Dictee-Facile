@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "La Dictée",
+    "slug": "dictee-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "dictee-app",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF8F0"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.dicteeapp.ios",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Pour scanner ta feuille de mots de dictée",
+        "NSPhotoLibraryUsageDescription": "Pour choisir une photo de ta feuille de dictée"
+      }
+    },
+    "android": {},
+    "web": {
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://replit.com/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

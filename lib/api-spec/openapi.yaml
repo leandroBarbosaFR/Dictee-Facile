@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: dictee
+    description: Opérations de dictée
 paths:
   /healthz:
     get:
@@ -24,6 +26,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /dictee/ocr:
+    post:
+      operationId: extractWords
+      tags: [dictee]
+      summary: Extraire les mots d'une image
+      description: Analyse une image et retourne la liste des mots détectés (OCR)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OcrRequest"
+      responses:
+        "200":
+          description: Mots extraits avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OcrResponse"
+        "400":
+          description: Requête invalide
+        "500":
+          description: Erreur lors de l'analyse
 components:
   schemas:
     HealthStatus:
@@ -33,4 +58,25 @@ components:
           type: string
       required:
         - status
-
+    OcrRequest:
+      type: object
+      properties:
+        image:
+          type: string
+          description: Image encodée en base64
+        mimeType:
+          type: string
+          description: Type MIME de l'image
+          default: "image/jpeg"
+      required:
+        - image
+    OcrResponse:
+      type: object
+      properties:
+        mots:
+          type: array
+          items:
+            type: string
+          description: Liste des mots détectés
+      required:
+        - mots

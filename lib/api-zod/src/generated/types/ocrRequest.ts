@@ -5,9 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
 
 export interface OcrRequest {
   /** Image encodée en base64 */
@@ -15,9 +12,3 @@ export interface OcrRequest {
   /** Type MIME de l'image */
   mimeType?: string;
 }
-
-export interface OcrResponse {
-  /** Liste des mots détectés */
-  mots: string[];
-}
-

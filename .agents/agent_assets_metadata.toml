@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "JJe9DBmgej143fC_ZnX02"
+uri = "file://artifacts/dictee-app/assets/images/icon.png"
+type = "image"
+title = "dictee app icon"

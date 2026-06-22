@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export * from './healthStatus';
-export * from './ocrRequest';
-export * from './ocrResponse';
+export interface OcrResponse {
+  /** Liste des mots détectés */
+  mots: string[];
+}
