@@ -126,7 +126,7 @@ export default function ScannerScreen() {
         "Impossible d'analyser l'image. Vérifie ta connexion internet et réessaie.",
       );
     }
-  }, [imageBase64, extractWords, router]);
+  }, [imageBase64, runOcr, router]);
 
   const styles = makeStyles(colors, insets);
   const isWeb = Platform.OS === "web";
