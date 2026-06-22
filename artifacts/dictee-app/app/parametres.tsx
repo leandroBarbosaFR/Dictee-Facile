@@ -10,12 +10,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useSettings, type VoiceType } from "@/context/SettingsContext";
+import { useSettings, type DelaiSuivant, type VoiceType } from "@/context/SettingsContext";
 import { useColors } from "@/hooks/useColors";
 
 const VOICE_OPTIONS: {
@@ -27,6 +28,13 @@ const VOICE_OPTIONS: {
   { type: "H", label: "Homme", sub: "Voix masculine", icon: "person" },
   { type: "F", label: "Femme", sub: "Voix féminine", icon: "person" },
   { type: "Enfant", label: "Enfant", sub: "Voix enfantine", icon: "happy" },
+];
+
+const DELAI_OPTIONS: { value: DelaiSuivant; label: string }[] = [
+  { value: 0, label: "Off" },
+  { value: 2, label: "2 s" },
+  { value: 5, label: "5 s" },
+  { value: 10, label: "10 s" },
 ];
 
 const PITCH_MAP: Record<VoiceType, number> = { H: 0.9, F: 1.1, Enfant: 1.4 };
@@ -180,7 +188,7 @@ const sliderStyles = StyleSheet.create({
 export default function ParametresScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { settings, setVoiceType, setVitesse } = useSettings();
+  const { settings, setVoiceType, setVitesse, setRepeterMot, setDelaiSuivant } = useSettings();
 
   const handleTestVoice = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -207,6 +215,22 @@ export default function ParametresScreen() {
       setVitesse(v);
     },
     [setVitesse],
+  );
+
+  const handleRepeterToggle = useCallback(
+    (v: boolean) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setRepeterMot(v);
+    },
+    [setRepeterMot],
+  );
+
+  const handleDelaiSelect = useCallback(
+    (v: DelaiSuivant) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setDelaiSuivant(v);
+    },
+    [setDelaiSuivant],
   );
 
   const styles = makeStyles(colors, insets);
@@ -287,6 +311,77 @@ export default function ParametresScreen() {
           onChange={handleVitesseChange}
           colors={colors}
         />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Répétition</Text>
+        <Text style={styles.sectionSub}>Lire le mot deux fois de suite</Text>
+        <View style={[styles.toggleRow, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={styles.toggleInfo}>
+            <Feather name="repeat" size={20} color={settings.repeterMot ? colors.primary : colors.mutedForeground} />
+            <View style={{ gap: 2 }}>
+              <Text style={[styles.toggleLabel, settings.repeterMot && { color: colors.primary }]}>
+                Répéter le mot 2 fois
+              </Text>
+              <Text style={styles.toggleSub}>
+                Le mot est lu deux fois pour mieux l'entendre
+              </Text>
+            </View>
+          </View>
+          <Switch
+            value={settings.repeterMot}
+            onValueChange={handleRepeterToggle}
+            trackColor={{ false: colors.muted, true: `${colors.primary}60` }}
+            thumbColor={settings.repeterMot ? colors.primary : colors.mutedForeground}
+            testID="toggle-repeter"
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Délai automatique</Text>
+        <Text style={styles.sectionSub}>
+          Passe au mot suivant automatiquement après ce délai
+        </Text>
+        <View style={styles.delaiGrid}>
+          {DELAI_OPTIONS.map((opt) => {
+            const active = settings.delaiSuivant === opt.value;
+            return (
+              <Pressable
+                key={opt.value}
+                onPress={() => handleDelaiSelect(opt.value)}
+                style={({ pressed }) => [
+                  styles.delaiCard,
+                  active && styles.delaiCardActive,
+                  pressed && styles.pressed,
+                ]}
+                testID={`delai-${opt.value}`}
+              >
+                {opt.value === 0 ? (
+                  <Feather
+                    name="slash"
+                    size={20}
+                    color={active ? colors.primary : colors.mutedForeground}
+                  />
+                ) : (
+                  <Feather
+                    name="clock"
+                    size={20}
+                    color={active ? colors.primary : colors.mutedForeground}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.delaiLabel,
+                    active && { color: colors.primary },
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       <View style={styles.section}>
@@ -399,6 +494,54 @@ function makeStyles(
     vitesseBadgeText: {
       fontFamily: "Geist_800ExtraBold",
       fontSize: 18,
+    },
+    toggleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      borderRadius: colors.radius,
+      borderWidth: 2,
+      padding: 16,
+      gap: 12,
+    },
+    toggleInfo: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    toggleLabel: {
+      fontFamily: "Geist_700Bold",
+      fontSize: 16,
+      color: colors.foreground,
+    },
+    toggleSub: {
+      fontFamily: "Geist_400Regular",
+      fontSize: 12,
+      color: colors.mutedForeground,
+    },
+    delaiGrid: {
+      flexDirection: "row",
+      gap: 10,
+    },
+    delaiCard: {
+      flex: 1,
+      backgroundColor: colors.card,
+      borderRadius: colors.radius,
+      padding: 14,
+      alignItems: "center",
+      gap: 8,
+      borderWidth: 2,
+      borderColor: colors.border,
+    },
+    delaiCardActive: {
+      borderColor: colors.primary,
+      backgroundColor: `${colors.primary}10`,
+    },
+    delaiLabel: {
+      fontFamily: "Geist_700Bold",
+      fontSize: 15,
+      color: colors.foreground,
     },
     testButton: {
       flexDirection: "row",

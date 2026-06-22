@@ -5,7 +5,6 @@ import * as Haptics from "expo-haptics";
 import * as Speech from "expo-speech";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Alert,
   Platform,
   Pressable,
   StyleSheet,
@@ -62,7 +61,12 @@ export default function DicteeScreen() {
   const [revealed, setRevealed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   const voiceIdRef = useRef<string | undefined>(undefined);
+  const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const repeatTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoAdvanceRef = useRef<(() => void) | null>(null);
+  const sessionNonceRef = useRef(0);
 
   useEffect(() => {
     AsyncStorage.getItem(MOTS_SESSION_KEY)
@@ -79,60 +83,162 @@ export default function DicteeScreen() {
     });
 
     return () => {
+      sessionNonceRef.current += 1;
       Speech.stop();
+      if (repeatTimeoutRef.current !== null) {
+        clearTimeout(repeatTimeoutRef.current);
+        repeatTimeoutRef.current = null;
+      }
+      if (countdownIntervalRef.current !== null) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
     };
   }, [settings.voiceType]);
 
+  const clearCountdown = useCallback(() => {
+    if (countdownIntervalRef.current !== null) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+    autoAdvanceRef.current = null;
+    setCountdown(0);
+  }, []);
+
+  const clearPlayback = useCallback(() => {
+    sessionNonceRef.current += 1;
+    Speech.stop();
+    if (repeatTimeoutRef.current !== null) {
+      clearTimeout(repeatTimeoutRef.current);
+      repeatTimeoutRef.current = null;
+    }
+    clearCountdown();
+    setIsPlaying(false);
+  }, [clearCountdown]);
+
+  const startCountdown = useCallback(
+    (delaySeconds: number, onDone: () => void) => {
+      if (delaySeconds === 0) return;
+      clearCountdown();
+      setCountdown(delaySeconds);
+      autoAdvanceRef.current = onDone;
+
+      const ticksLeft = { value: delaySeconds };
+      countdownIntervalRef.current = setInterval(() => {
+        ticksLeft.value -= 1;
+        setCountdown(ticksLeft.value);
+        if (ticksLeft.value <= 0) {
+          clearInterval(countdownIntervalRef.current!);
+          countdownIntervalRef.current = null;
+          autoAdvanceRef.current?.();
+          autoAdvanceRef.current = null;
+        }
+      }, 1000);
+    },
+    [clearCountdown],
+  );
+
   const speakWord = useCallback(
-    (word: string) => {
-      Speech.stop();
+    (word: string, onFinished?: () => void) => {
+      clearPlayback();
       setIsPlaying(true);
       setRevealed(false);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      const speakOptions: Speech.SpeechOptions = {
-        language: "fr-FR",
-        rate: settings.vitesse,
-        pitch: PITCH_MAP[settings.voiceType],
-        onDone: () => setIsPlaying(false),
-        onError: () => setIsPlaying(false),
-      };
-      if (voiceIdRef.current) {
-        speakOptions.voice = voiceIdRef.current;
-      }
+      const nonce = sessionNonceRef.current;
 
-      Speech.speak(word, speakOptions);
+      const buildOptions = (onDone: () => void): Speech.SpeechOptions => {
+        const opts: Speech.SpeechOptions = {
+          language: "fr-FR",
+          rate: settings.vitesse,
+          pitch: PITCH_MAP[settings.voiceType],
+          onDone: () => {
+            if (sessionNonceRef.current !== nonce) return;
+            onDone();
+          },
+          onError: () => {
+            if (sessionNonceRef.current !== nonce) return;
+            setIsPlaying(false);
+            onFinished?.();
+          },
+        };
+        if (voiceIdRef.current) {
+          opts.voice = voiceIdRef.current;
+        }
+        return opts;
+      };
+
+      if (settings.repeterMot) {
+        Speech.speak(
+          word,
+          buildOptions(() => {
+            repeatTimeoutRef.current = setTimeout(() => {
+              repeatTimeoutRef.current = null;
+              if (sessionNonceRef.current !== nonce) return;
+              Speech.speak(
+                word,
+                buildOptions(() => {
+                  setIsPlaying(false);
+                  onFinished?.();
+                }),
+              );
+            }, 500);
+          }),
+        );
+      } else {
+        Speech.speak(
+          word,
+          buildOptions(() => {
+            setIsPlaying(false);
+            onFinished?.();
+          }),
+        );
+      }
     },
-    [settings],
+    [settings, clearPlayback],
+  );
+
+  const advanceOrFinish = useCallback(
+    (currentIndex: number, motsList: string[]) => {
+      clearPlayback();
+      setRevealed(false);
+      if (currentIndex < motsList.length - 1) {
+        setIndex(currentIndex + 1);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      } else {
+        setFinished(true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    },
+    [clearPlayback],
   );
 
   const handleEcouter = useCallback(() => {
     if (mots.length === 0) return;
-    speakWord(mots[index] ?? "");
-  }, [mots, index, speakWord]);
+    const currentIndex = index;
+    const motsList = mots;
+
+    speakWord(mots[currentIndex] ?? "", () => {
+      if (settings.delaiSuivant > 0) {
+        startCountdown(settings.delaiSuivant, () => {
+          advanceOrFinish(currentIndex, motsList);
+        });
+      }
+    });
+  }, [mots, index, speakWord, settings.delaiSuivant, startCountdown, advanceOrFinish]);
 
   const handleNext = useCallback(() => {
-    Speech.stop();
-    setIsPlaying(false);
-    setRevealed(false);
-    if (index < mots.length - 1) {
-      setIndex(index + 1);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } else {
-      setFinished(true);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
-  }, [index, mots.length]);
+    advanceOrFinish(index, mots);
+  }, [index, mots, advanceOrFinish]);
 
   const handlePrev = useCallback(() => {
-    Speech.stop();
-    setIsPlaying(false);
+    clearPlayback();
     setRevealed(false);
     if (index > 0) {
       setIndex(index - 1);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-  }, [index]);
+  }, [index, clearPlayback]);
 
   const handleReveal = useCallback(() => {
     setRevealed((r) => !r);
@@ -140,21 +246,23 @@ export default function DicteeScreen() {
   }, []);
 
   const handleTerminer = useCallback(() => {
-    Speech.stop();
+    clearPlayback();
     router.replace("/(tabs)");
-  }, [router]);
+  }, [router, clearPlayback]);
 
   const handleRecommencer = useCallback(() => {
-    Speech.stop();
+    clearPlayback();
     setIndex(0);
     setRevealed(false);
-    setIsPlaying(false);
     setFinished(false);
-  }, []);
+  }, [clearPlayback]);
 
   const styles = makeStyles(colors, insets);
   const isWeb = Platform.OS === "web";
   const progress = mots.length > 0 ? (index + 1) / mots.length : 0;
+  const countdownProgress = settings.delaiSuivant > 0 && countdown > 0
+    ? countdown / settings.delaiSuivant
+    : 0;
 
   if (finished) {
     return (
@@ -222,10 +330,24 @@ export default function DicteeScreen() {
           </Text>
         </View>
 
-        <View style={styles.settingsBadge}>
-          <Text style={styles.settingsBadgeText}>
-            {VOICE_LABELS[settings.voiceType]} · {settings.vitesse.toFixed(1)}×
-          </Text>
+        <View style={styles.badgesRow}>
+          <View style={styles.settingsBadge}>
+            <Text style={styles.settingsBadgeText}>
+              {VOICE_LABELS[settings.voiceType]} · {settings.vitesse.toFixed(1)}×
+            </Text>
+          </View>
+          {settings.repeterMot && (
+            <View style={styles.settingsBadge}>
+              <Feather name="repeat" size={11} color="rgba(255,255,255,0.7)" />
+              <Text style={styles.settingsBadgeText}>×2</Text>
+            </View>
+          )}
+          {settings.delaiSuivant > 0 && (
+            <View style={styles.settingsBadge}>
+              <Feather name="clock" size={11} color="rgba(255,255,255,0.7)" />
+              <Text style={styles.settingsBadgeText}>{settings.delaiSuivant}s</Text>
+            </View>
+          )}
         </View>
       </View>
 
@@ -245,17 +367,20 @@ export default function DicteeScreen() {
 
         <Pressable
           onPress={handleEcouter}
-          disabled={isPlaying}
+          disabled={isPlaying || countdown > 0}
           style={({ pressed }) => [
             styles.ecouterButton,
             isPlaying && styles.ecouterButtonPlaying,
+            countdown > 0 && styles.ecouterButtonDisabled,
             pressed && styles.pressed,
           ]}
         >
           {isPlaying ? (
             <>
               <Ionicons name="volume-high" size={36} color="#FFFFFF" />
-              <Text style={styles.ecouterText}>En cours...</Text>
+              <Text style={styles.ecouterText}>
+                {settings.repeterMot ? "Lecture..." : "En cours..."}
+              </Text>
             </>
           ) : (
             <>
@@ -264,6 +389,28 @@ export default function DicteeScreen() {
             </>
           )}
         </Pressable>
+
+        {countdown > 0 && (
+          <View style={styles.countdownContainer}>
+            <View style={styles.countdownTrack}>
+              <View
+                style={[
+                  styles.countdownFill,
+                  { width: `${countdownProgress * 100}%` as any },
+                ]}
+              />
+            </View>
+            <View style={styles.countdownRow}>
+              <Feather name="clock" size={14} color="rgba(255,255,255,0.6)" />
+              <Text style={styles.countdownText}>
+                Mot suivant dans {countdown}s
+              </Text>
+              <Pressable onPress={clearCountdown} style={styles.countdownCancel}>
+                <Feather name="x" size={14} color="rgba(255,255,255,0.5)" />
+              </Pressable>
+            </View>
+          </View>
+        )}
       </View>
 
       <View
@@ -343,7 +490,15 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       fontSize: 13,
       color: "rgba(255,255,255,0.6)",
     },
+    badgesRow: {
+      flexDirection: "row",
+      gap: 8,
+      flexWrap: "wrap",
+    },
     settingsBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
       alignSelf: "flex-start",
       backgroundColor: "rgba(255,255,255,0.1)",
       borderRadius: 20,
@@ -412,10 +567,42 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
     ecouterButtonPlaying: {
       backgroundColor: colors.accent,
     },
+    ecouterButtonDisabled: {
+      opacity: 0.5,
+    },
     ecouterText: {
       fontFamily: "Geist_800ExtraBold",
       fontSize: 24,
       color: "#FFFFFF",
+    },
+    countdownContainer: {
+      width: "100%",
+      gap: 8,
+    },
+    countdownTrack: {
+      height: 4,
+      backgroundColor: "rgba(255,255,255,0.15)",
+      borderRadius: 2,
+      overflow: "hidden",
+    },
+    countdownFill: {
+      height: "100%",
+      backgroundColor: colors.accent,
+      borderRadius: 2,
+    },
+    countdownRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 6,
+    },
+    countdownText: {
+      fontFamily: "Geist_400Regular",
+      fontSize: 13,
+      color: "rgba(255,255,255,0.6)",
+    },
+    countdownCancel: {
+      padding: 4,
     },
     navBar: {
       flexDirection: "row",
