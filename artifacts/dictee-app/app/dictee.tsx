@@ -18,9 +18,7 @@ import { useSettings, type VoiceType } from "@/context/SettingsContext";
 import { useColors } from "@/hooks/useColors";
 
 const MOTS_SESSION_KEY = "@current_mots_session";
-const RATE_MAP = [0.5, 0.85, 1.1] as const;
 const PITCH_MAP: Record<VoiceType, number> = { H: 0.9, F: 1.1, Enfant: 1.4 };
-const VITESSE_LABELS = ["Lente", "Normale", "Rapide"] as const;
 const VOICE_LABELS: Record<VoiceType, string> = {
   H: "Homme",
   F: "Femme",
@@ -94,7 +92,7 @@ export default function DicteeScreen() {
 
       const speakOptions: Speech.SpeechOptions = {
         language: "fr-FR",
-        rate: RATE_MAP[settings.vitesse],
+        rate: settings.vitesse,
         pitch: PITCH_MAP[settings.voiceType],
         onDone: () => setIsPlaying(false),
         onError: () => setIsPlaying(false),

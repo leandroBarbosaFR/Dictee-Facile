@@ -1,9 +1,11 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as Speech from "expo-speech";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   Alert,
+  Animated,
+  PanResponder,
   Platform,
   Pressable,
   ScrollView,
@@ -13,23 +15,167 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useSettings, type VoiceType, type Vitesse } from "@/context/SettingsContext";
+import { useSettings, type VoiceType } from "@/context/SettingsContext";
 import { useColors } from "@/hooks/useColors";
 
-const VOICE_OPTIONS: { type: VoiceType; label: string; sub: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+const VOICE_OPTIONS: {
+  type: VoiceType;
+  label: string;
+  sub: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}[] = [
   { type: "H", label: "Homme", sub: "Voix masculine", icon: "person" },
   { type: "F", label: "Femme", sub: "Voix féminine", icon: "person" },
   { type: "Enfant", label: "Enfant", sub: "Voix enfantine", icon: "happy" },
 ];
 
-const VITESSE_OPTIONS: { value: Vitesse; label: string; sub: string }[] = [
-  { value: 0, label: "Lente", sub: "0.5×" },
-  { value: 1, label: "Normale", sub: "1×" },
-  { value: 2, label: "Rapide", sub: "1.2×" },
-];
-
-const RATE_MAP = [0.5, 0.85, 1.1] as const;
 const PITCH_MAP: Record<VoiceType, number> = { H: 0.9, F: 1.1, Enfant: 1.4 };
+const MIN_SPEED = 0.5;
+const MAX_SPEED = 1.5;
+const THUMB_RADIUS = 14;
+
+interface SpeedSliderProps {
+  value: number;
+  onChange: (v: number) => void;
+  colors: ReturnType<typeof useColors>;
+}
+
+function SpeedSlider({ value, onChange, colors }: SpeedSliderProps) {
+  const trackWidthRef = useRef(280);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  const posFromValue = (v: number) =>
+    ((v - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)) * trackWidthRef.current;
+
+  const thumbX = useRef(new Animated.Value(posFromValue(value))).current;
+  const offsetRef = useRef(posFromValue(value));
+
+  useEffect(() => {
+    const p = posFromValue(value);
+    thumbX.setValue(p);
+    offsetRef.current = p;
+  }, [value]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (event) => {
+        const x = event.nativeEvent.locationX;
+        const tw = trackWidthRef.current;
+        const newPos = Math.max(0, Math.min(tw, x));
+        thumbX.setValue(newPos);
+        offsetRef.current = newPos;
+        const speed =
+          MIN_SPEED + (newPos / tw) * (MAX_SPEED - MIN_SPEED);
+        onChangeRef.current(Math.round(speed * 10) / 10);
+      },
+      onPanResponderMove: (_, gestureState) => {
+        const tw = trackWidthRef.current;
+        const newPos = Math.max(
+          0,
+          Math.min(tw, offsetRef.current + gestureState.dx),
+        );
+        thumbX.setValue(newPos);
+        const speed =
+          MIN_SPEED + (newPos / tw) * (MAX_SPEED - MIN_SPEED);
+        onChangeRef.current(Math.round(speed * 10) / 10);
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        const tw = trackWidthRef.current;
+        const newPos = Math.max(
+          0,
+          Math.min(tw, offsetRef.current + gestureState.dx),
+        );
+        offsetRef.current = newPos;
+      },
+    }),
+  ).current;
+
+  const LABELS = ["0.5×", "0.75×", "1×", "1.25×", "1.5×"];
+
+  return (
+    <View style={{ gap: 12 }}>
+      <View
+        onLayout={(e) => {
+          const w = e.nativeEvent.layout.width - THUMB_RADIUS * 2;
+          trackWidthRef.current = w;
+          thumbX.setValue(posFromValue(value));
+          offsetRef.current = posFromValue(value);
+        }}
+        style={sliderStyles.wrapper}
+        {...panResponder.panHandlers}
+      >
+        <View style={[sliderStyles.track, { backgroundColor: colors.muted }]}>
+          <Animated.View
+            style={[
+              sliderStyles.fill,
+              { backgroundColor: colors.primary, width: thumbX },
+            ]}
+          />
+        </View>
+        <Animated.View
+          style={[
+            sliderStyles.thumb,
+            {
+              backgroundColor: colors.primary,
+              left: -THUMB_RADIUS,
+              transform: [{ translateX: thumbX }],
+              shadowColor: colors.primary,
+            },
+          ]}
+        />
+      </View>
+      <View style={sliderStyles.labelRow}>
+        {LABELS.map((l) => (
+          <Text
+            key={l}
+            style={[sliderStyles.labelText, { color: colors.mutedForeground }]}
+          >
+            {l}
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+const sliderStyles = StyleSheet.create({
+  wrapper: {
+    height: 40,
+    justifyContent: "center",
+    paddingHorizontal: THUMB_RADIUS,
+  },
+  track: {
+    height: 6,
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  fill: {
+    height: 6,
+    borderRadius: 3,
+  },
+  thumb: {
+    position: "absolute",
+    width: THUMB_RADIUS * 2,
+    height: THUMB_RADIUS * 2,
+    borderRadius: THUMB_RADIUS,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  labelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: THUMB_RADIUS,
+  },
+  labelText: {
+    fontFamily: "Geist_400Regular",
+    fontSize: 11,
+  },
+});
 
 export default function ParametresScreen() {
   const colors = useColors();
@@ -41,7 +187,7 @@ export default function ParametresScreen() {
     Speech.stop();
     Speech.speak("Bonjour ! Je suis ta voix pour la dictée.", {
       language: "fr-FR",
-      rate: RATE_MAP[settings.vitesse],
+      rate: settings.vitesse,
       pitch: PITCH_MAP[settings.voiceType],
       onError: () =>
         Alert.alert("Erreur", "Impossible de lire la voix sur cet appareil."),
@@ -56,9 +202,8 @@ export default function ParametresScreen() {
     [setVoiceType],
   );
 
-  const handleVitesseSelect = useCallback(
-    (v: Vitesse) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleVitesseChange = useCallback(
+    (v: number) => {
       setVitesse(v);
     },
     [setVitesse],
@@ -116,9 +261,7 @@ export default function ParametresScreen() {
                   {opt.label}
                 </Text>
                 <Text style={styles.voiceSub}>{opt.sub}</Text>
-                {active && (
-                  <View style={styles.activeDot} />
-                )}
+                {active && <View style={styles.activeDot} />}
               </Pressable>
             );
           })}
@@ -126,42 +269,24 @@ export default function ParametresScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Vitesse</Text>
-        <Text style={styles.sectionSub}>Ajuste la rapidité de lecture</Text>
-        <View style={styles.vitesseRow}>
-          {VITESSE_OPTIONS.map((opt) => {
-            const active = settings.vitesse === opt.value;
-            return (
-              <Pressable
-                key={opt.value}
-                onPress={() => handleVitesseSelect(opt.value)}
-                style={({ pressed }) => [
-                  styles.vitesseButton,
-                  active && styles.vitesseButtonActive,
-                  pressed && styles.pressed,
-                ]}
-                testID={`vitesse-${opt.value}`}
-              >
-                <Text
-                  style={[
-                    styles.vitesseLabel,
-                    active && styles.vitesseLabelActive,
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-                <Text
-                  style={[
-                    styles.vitesseSub,
-                    active && styles.vitesseSubActive,
-                  ]}
-                >
-                  {opt.sub}
-                </Text>
-              </Pressable>
-            );
-          })}
+        <View style={styles.vitesseHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Vitesse</Text>
+            <Text style={styles.sectionSub}>Ajuste la rapidité de lecture</Text>
+          </View>
+          <View style={styles.vitesseBadge}>
+            <Text
+              style={[styles.vitesseBadgeText, { color: colors.primary }]}
+            >
+              {settings.vitesse.toFixed(1)}×
+            </Text>
+          </View>
         </View>
+        <SpeedSlider
+          value={settings.vitesse}
+          onChange={handleVitesseChange}
+          colors={colors}
+        />
       </View>
 
       <View style={styles.section}>
@@ -190,7 +315,10 @@ export default function ParametresScreen() {
   );
 }
 
-function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typeof useSafeAreaInsets>) {
+function makeStyles(
+  colors: ReturnType<typeof useColors>,
+  insets: ReturnType<typeof useSafeAreaInsets>,
+) {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -257,39 +385,20 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       borderRadius: 4,
       backgroundColor: colors.primary,
     },
-    vitesseRow: {
+    vitesseHeader: {
       flexDirection: "row",
-      gap: 10,
-    },
-    vitesseButton: {
-      flex: 1,
-      backgroundColor: colors.card,
-      borderRadius: colors.radius,
-      padding: 16,
       alignItems: "center",
-      gap: 4,
-      borderWidth: 2,
-      borderColor: colors.border,
+      justifyContent: "space-between",
     },
-    vitesseButtonActive: {
-      borderColor: colors.secondary,
-      backgroundColor: `${colors.secondary}10`,
+    vitesseBadge: {
+      backgroundColor: `${colors.primary}15`,
+      borderRadius: 10,
+      paddingHorizontal: 14,
+      paddingVertical: 6,
     },
-    vitesseLabel: {
+    vitesseBadgeText: {
       fontFamily: "Geist_800ExtraBold",
-      fontSize: 16,
-      color: colors.foreground,
-    },
-    vitesseLabelActive: {
-      color: colors.secondary,
-    },
-    vitesseSub: {
-      fontFamily: "Geist_400Regular",
-      fontSize: 13,
-      color: colors.mutedForeground,
-    },
-    vitesseSubActive: {
-      color: colors.secondary,
+      fontSize: 18,
     },
     testButton: {
       flexDirection: "row",

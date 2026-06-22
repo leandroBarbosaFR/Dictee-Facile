@@ -2,22 +2,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export type VoiceType = "H" | "F" | "Enfant";
-export type Vitesse = 0 | 1 | 2;
 
 export interface Settings {
   voiceType: VoiceType;
-  vitesse: Vitesse;
+  vitesse: number;
 }
 
 interface SettingsContextType {
   settings: Settings;
   setVoiceType: (type: VoiceType) => void;
-  setVitesse: (v: Vitesse) => void;
+  setVitesse: (v: number) => void;
 }
 
 const defaultSettings: Settings = {
   voiceType: "F",
-  vitesse: 1,
+  vitesse: 0.85,
 };
 
 const STORAGE_KEY = "@dictee_settings_v1";
