@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.dicteeapp.ios",
+      "bundleIdentifier": "com.1367studio.workspace",
       "infoPlist": {
         "NSCameraUsageDescription": "Pour scanner ta feuille de mots de dictée",
         "NSPhotoLibraryUsageDescription": "Pour choisir une photo de ta feuille de dictée"
