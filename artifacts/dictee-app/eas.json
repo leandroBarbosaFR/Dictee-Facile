@@ -9,13 +9,13 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "ios": {
-        "simulator": false
-      }
+      "distribution": "internal"
     },
     "production": {
       "autoIncrement": true,
+      "env": {
+        "EXPO_USE_METRO_WORKSPACE_ROOT": "1"
+      },
       "ios": {
         "resourceClass": "m-medium"
       }
@@ -24,9 +24,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "TON_APPLE_ID@icloud.com",
+        "appleId": "leandro@1367studio.com",
         "ascAppId": "TON_APP_STORE_CONNECT_APP_ID",
-        "appleTeamId": "TON_TEAM_ID"
+        "appleTeamId": "7AK33R9QQ4"
       }
     }
   }
