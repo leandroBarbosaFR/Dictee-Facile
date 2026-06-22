@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -79,12 +78,10 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.heroSection}>
-        <Image
-          source={require("../../assets/images/icon.png")}
-          style={styles.icon}
-          resizeMode="contain"
-        />
-        <Text style={styles.appTitle}>La Dictée</Text>
+        <View style={styles.logoMark}>
+          <Feather name="edit-3" size={40} color={colors.primaryForeground} />
+        </View>
+        <Text style={styles.appTitle}>Les Mots{"\n"}Malins</Text>
         <Text style={styles.appSubtitle}>
           Apprends à écrire les mots correctement
         </Text>
@@ -216,30 +213,39 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       padding: 8,
     },
     heroSection: {
-      alignItems: "center",
-      paddingVertical: 32,
+      alignItems: "flex-start",
+      paddingVertical: 28,
     },
-    icon: {
-      width: 100,
-      height: 100,
-      borderRadius: 22,
+    logoMark: {
+      width: 72,
+      height: 72,
+      borderRadius: 20,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
       marginBottom: 20,
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 6,
     },
     appTitle: {
-      fontFamily: "Nunito_800ExtraBold",
-      fontSize: 42,
-      color: colors.primary,
-      letterSpacing: -1,
+      fontFamily: "Geist_800ExtraBold",
+      fontSize: 46,
+      color: colors.foreground,
+      letterSpacing: -1.5,
+      lineHeight: 52,
+      marginBottom: 12,
     },
     appSubtitle: {
-      fontFamily: "Nunito_400Regular",
-      fontSize: 17,
+      fontFamily: "Geist_400Regular",
+      fontSize: 16,
       color: colors.mutedForeground,
-      marginTop: 8,
-      textAlign: "center",
+      lineHeight: 22,
     },
     actionsSection: {
-      gap: 14,
+      gap: 12,
       marginBottom: 32,
     },
     primaryButton: {
@@ -280,23 +286,23 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       flex: 1,
     },
     primaryButtonTitle: {
-      fontFamily: "Nunito_800ExtraBold",
-      fontSize: 18,
+      fontFamily: "Geist_800ExtraBold",
+      fontSize: 17,
       color: colors.primaryForeground,
     },
     primaryButtonSub: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 13,
       color: "rgba(255,255,255,0.75)",
       marginTop: 2,
     },
     secondaryButtonTitle: {
-      fontFamily: "Nunito_700Bold",
-      fontSize: 17,
+      fontFamily: "Geist_700Bold",
+      fontSize: 16,
       color: colors.secondary,
     },
     secondaryButtonSub: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 13,
       color: colors.mutedForeground,
       marginTop: 2,
@@ -309,11 +315,11 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       gap: 8,
     },
     sectionTitle: {
-      fontFamily: "Nunito_700Bold",
-      fontSize: 16,
+      fontFamily: "Geist_700Bold",
+      fontSize: 12,
       color: colors.mutedForeground,
       textTransform: "uppercase",
-      letterSpacing: 1,
+      letterSpacing: 1.5,
       marginBottom: 4,
     },
     historyItem: {
@@ -330,12 +336,12 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       flex: 1,
     },
     historyDate: {
-      fontFamily: "Nunito_700Bold",
-      fontSize: 13,
+      fontFamily: "Geist_700Bold",
+      fontSize: 12,
       color: colors.mutedForeground,
     },
     historyMots: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 14,
       color: colors.foreground,
       marginTop: 2,

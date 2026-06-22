@@ -1,9 +1,9 @@
 import {
-  Nunito_400Regular,
-  Nunito_700Bold,
-  Nunito_800ExtraBold,
+  Geist_400Regular,
+  Geist_700Bold,
+  Geist_800ExtraBold,
   useFonts,
-} from "@expo-google-fonts/nunito";
+} from "@expo-google-fonts/geist";
 import { setBaseUrl } from "@workspace/api-client-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
@@ -31,7 +31,7 @@ function RootLayoutNav() {
         headerStyle: { backgroundColor: colors.card },
         headerTintColor: colors.primary,
         headerTitleStyle: {
-          fontFamily: "Nunito_700Bold",
+          fontFamily: "Geist_700Bold",
           fontSize: 18,
           color: colors.foreground,
         },
@@ -53,9 +53,9 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    Nunito_400Regular,
-    Nunito_700Bold,
-    Nunito_800ExtraBold,
+    Geist_400Regular,
+    Geist_700Bold,
+    Geist_800ExtraBold,
   });
 
   useEffect(() => {

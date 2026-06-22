@@ -341,7 +341,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       borderRadius: 3,
     },
     progressLabel: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 13,
       color: "rgba(255,255,255,0.6)",
     },
@@ -353,7 +353,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       paddingVertical: 4,
     },
     settingsBadgeText: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 12,
       color: "rgba(255,255,255,0.7)",
     },
@@ -365,7 +365,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       gap: 24,
     },
     motLabel: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 18,
       color: "rgba(255,255,255,0.6)",
       textTransform: "uppercase",
@@ -383,7 +383,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       padding: 24,
     },
     motRevealed: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 48,
       color: "#FFFFFF",
       textAlign: "center",
@@ -393,7 +393,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       gap: 12,
     },
     hiddenHint: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 16,
       color: "rgba(255,255,255,0.4)",
     },
@@ -415,7 +415,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       backgroundColor: colors.accent,
     },
     ecouterText: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 24,
       color: "#FFFFFF",
     },
@@ -449,7 +449,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       padding: 14,
     },
     nextButtonText: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 17,
       color: colors.foreground,
     },
@@ -476,19 +476,19 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       justifyContent: "center",
     },
     finishedTitle: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 52,
       color: "#FFFFFF",
     },
     finishedSubtitle: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 20,
       color: "rgba(255,255,255,0.85)",
       textAlign: "center",
       lineHeight: 30,
     },
     finishedCount: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       color: "#FFFFFF",
     },
     finishedActions: {
@@ -506,7 +506,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       paddingVertical: 14,
     },
     recommencerText: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 16,
       color: colors.success,
     },
@@ -520,7 +520,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       paddingVertical: 14,
     },
     terminerText: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 16,
       color: "#FFFFFF",
     },

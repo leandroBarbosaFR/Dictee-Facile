@@ -204,12 +204,12 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       gap: 14,
     },
     sectionTitle: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 22,
       color: colors.foreground,
     },
     sectionSub: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 14,
       color: colors.mutedForeground,
       marginTop: -8,
@@ -241,12 +241,12 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       justifyContent: "center",
     },
     voiceLabel: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 17,
       color: colors.foreground,
     },
     voiceSub: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 12,
       color: colors.mutedForeground,
       textAlign: "center",
@@ -276,7 +276,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       backgroundColor: `${colors.secondary}10`,
     },
     vitesseLabel: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 16,
       color: colors.foreground,
     },
@@ -284,7 +284,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       color: colors.secondary,
     },
     vitesseSub: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 13,
       color: colors.mutedForeground,
     },
@@ -306,7 +306,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       elevation: 4,
     },
     testButtonText: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 18,
       color: colors.secondaryForeground,
     },
@@ -319,7 +319,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
     },
     infoText: {
       flex: 1,
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 13,
       color: colors.mutedForeground,
       lineHeight: 20,

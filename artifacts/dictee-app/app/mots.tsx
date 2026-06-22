@@ -194,7 +194,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       backgroundColor: colors.background,
     },
     loadingText: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 16,
       color: colors.mutedForeground,
     },
@@ -209,7 +209,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       marginBottom: 4,
     },
     countText: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 14,
       color: colors.accentForeground,
     },
@@ -226,13 +226,13 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       gap: 12,
     },
     emptyTitle: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 20,
       color: colors.foreground,
       textAlign: "center",
     },
     emptySubtitle: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 15,
       color: colors.mutedForeground,
       textAlign: "center",
@@ -252,7 +252,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       justifyContent: "center",
     },
     motIndex: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 14,
       color: colors.mutedForeground,
     },
@@ -262,7 +262,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       borderRadius: 14,
       paddingHorizontal: 16,
       paddingVertical: 14,
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 18,
       color: colors.foreground,
       borderWidth: 2,
@@ -297,7 +297,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       borderColor: colors.secondary,
     },
     addButtonText: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 16,
       color: colors.secondary,
     },
@@ -316,7 +316,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       elevation: 4,
     },
     commencerText: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 18,
       color: colors.primaryForeground,
     },

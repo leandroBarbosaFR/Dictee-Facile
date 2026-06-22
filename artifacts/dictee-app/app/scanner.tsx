@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useExtractWordsMutation } from "@workspace/api-client-react";
+import { useExtractWords } from "@workspace/api-client-react";
 import { useColors } from "@/hooks/useColors";
 
 const MOTS_SESSION_KEY = "@current_mots_session";
@@ -29,7 +29,7 @@ export default function ScannerScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
 
-  const { mutateAsync: extractWords, isPending } = useExtractWordsMutation();
+  const { mutateAsync: runOcr, isPending } = useExtractWords();
 
   const pickImage = useCallback(
     async (fromCamera: boolean) => {
@@ -85,9 +85,8 @@ export default function ScannerScreen() {
     if (!imageBase64) return;
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      const result = await extractWords({
-        image: imageBase64,
-        mimeType: "image/jpeg",
+      const result = await runOcr({
+        data: { image: imageBase64, mimeType: "image/jpeg" },
       });
 
       if (!result.mots || result.mots.length === 0) {
@@ -283,7 +282,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       padding: 40,
     },
     emptyText: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 18,
       color: colors.mutedForeground,
       textAlign: "center",
@@ -316,7 +315,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       elevation: 4,
     },
     analyseButtonText: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 18,
       color: colors.primaryForeground,
     },
@@ -332,7 +331,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       elevation: 4,
     },
     cameraButtonText: {
-      fontFamily: "Nunito_800ExtraBold",
+      fontFamily: "Geist_800ExtraBold",
       fontSize: 18,
       color: colors.primaryForeground,
     },
@@ -345,7 +344,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       borderColor: colors.secondary,
     },
     galleryButtonText: {
-      fontFamily: "Nunito_700Bold",
+      fontFamily: "Geist_700Bold",
       fontSize: 18,
       color: colors.secondary,
     },
@@ -354,7 +353,7 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       padding: 12,
     },
     retakeText: {
-      fontFamily: "Nunito_400Regular",
+      fontFamily: "Geist_400Regular",
       fontSize: 15,
       color: colors.mutedForeground,
       textDecorationLine: "underline",

@@ -218,6 +218,9 @@ importers:
 
   artifacts/dictee-app:
     dependencies:
+      '@expo-google-fonts/geist':
+        specifier: ^0.4.2
+        version: 0.4.2
       '@expo-google-fonts/nunito':
         specifier: ^0.4.2
         version: 0.4.2
@@ -1189,6 +1192,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
+
+  '@expo-google-fonts/geist@0.4.2':
+    resolution: {integrity: sha512-cTsqJRQrvK5EniTVwH7UDK18RFf9Bc6yxciAuM936aViQ+eR6j3mLEI2rQkJXz5JP9kwtn8tHJviDyZ0ulH6oA==}
 
   '@expo-google-fonts/inter@0.4.2':
     resolution: {integrity: sha512-syfiImMaDmq7cFi0of+waE2M4uSCyd16zgyWxdPOY7fN2VBmSLKEzkfbZgeOjJq61kSqPBNNtXjggiQiSD6gMQ==}
@@ -6480,6 +6486,8 @@ snapshots:
 
   '@esbuild/linux-x64@0.27.3':
     optional: true
+
+  '@expo-google-fonts/geist@0.4.2': {}
 
   '@expo-google-fonts/inter@0.4.2': {}
 
