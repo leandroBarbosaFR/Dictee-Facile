@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useExtractWords } from "@workspace/api-client-react";
+import { useMutation } from "@tanstack/react-query";
 import { useColors } from "@/hooks/useColors";
 
 const MOTS_SESSION_KEY = "@current_mots_session";
@@ -29,7 +29,24 @@ export default function ScannerScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
 
-  const { mutateAsync: runOcr, isPending } = useExtractWords();
+  const { mutateAsync: runOcr, isPending } = useMutation({
+    mutationFn: async ({
+      image,
+      mimeType,
+    }: {
+      image: string;
+      mimeType: string;
+    }) => {
+      const apiBase = `https://${process.env.EXPO_PUBLIC_DOMAIN}`;
+      const res = await fetch(`${apiBase}/api/dictee/ocr`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image, mimeType }),
+      });
+      if (!res.ok) throw new Error(`OCR error ${res.status}`);
+      return res.json() as Promise<{ mots: string[] }>;
+    },
+  });
 
   const pickImage = useCallback(
     async (fromCamera: boolean) => {
@@ -86,7 +103,8 @@ export default function ScannerScreen() {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       const result = await runOcr({
-        data: { image: imageBase64, mimeType: "image/jpeg" },
+        image: imageBase64,
+        mimeType: "image/jpeg",
       });
 
       if (!result.mots || result.mots.length === 0) {

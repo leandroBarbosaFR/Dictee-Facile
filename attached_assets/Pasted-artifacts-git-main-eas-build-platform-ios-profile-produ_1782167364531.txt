@@ -1,0 +1,73 @@
+artifacts git:(main) ✗ eas build --platform ios --profile production      
+★ eas-cli@20.3.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+
+⚠️ Detected that your app uses Expo Go for development, this is not recommended when building production apps.
+Learn more
+To suppress this warning, set EAS_BUILD_NO_EXPO_GO_WARNING=true.
+
+Resolved "production" environment for the build. Learn more
+No environment variables with visibility "Plain text" and "Sensitive" found for the "production" environment on EAS.
+
+📝  iOS Bundle Identifier Learn more
+✔ What would you like your iOS bundle identifier to be? … com.1367studio.workspace
+✔ iOS app only uses standard/exempt encryption? Learn more … yes
+✔ Incremented buildNumber from 1 to 2.
+
+
+✔ EAS Build does not officially support building managed project with Expo SDK < 41. Do you want to proceed? … yes
+✔ Using remote iOS credentials (Expo server)
+
+If you provide your Apple account credentials we will be able to generate all necessary build credentials and fully validate them.
+This is optional, but without Apple account access you will need to provide all the missing values manually and we can only run minimal validation on them.
+✔ Do you want to log in to your Apple account? … yes
+
+› Log in to your Apple Developer account to continue
+✔ Apple ID: … leandro@1367studio.com
+› Restoring session /Users/leandro/.app-store/auth/leandro@1367studio.com/cookie
+› Team Leandro Barbosa (7AK33R9QQ4)
+› Provider Leandro Barbosa (129071748)
+✔ Logged in Local session
+✔ Bundle identifier registered com.1367studio.workspace
+✔ Synced capabilities: No updates
+✔ Synced capability identifiers: No updates
+✔ Fetched Apple distribution certificates
+✔ Fetched Apple provisioning profiles
+
+Project Credentials Configuration
+
+Project                   @1367studio/workspace
+Bundle Identifier         com.1367studio.workspace
+                          
+App Store Configuration   
+                          
+Distribution Certificate  
+Serial Number             667B6C9EBD52970AE41723AADA9C74B5
+Expiration Date           Tue, 22 Jun 2027 16:10:56 GMT-0300
+Apple Team                7AK33R9QQ4 (Leandro Barbosa (Individual))
+Updated                   3 hours ago
+                          
+Provisioning Profile      
+Developer Portal ID       ULG84464H6
+Status                    active
+Expiration                Tue, 22 Jun 2027 16:10:56 GMT-0300
+Apple Team                7AK33R9QQ4 (Leandro Barbosa (Individual))
+Updated                   3 hours ago
+                          
+All credentials are ready to build @1367studio/workspace (com.1367studio.workspace)
+
+
+Compressing project files and uploading to EAS Build. Learn more
+✔ Uploaded to EAS 1s
+
+See logs: https://expo.dev/accounts/1367studio/projects/workspace/builds/094e7441-b1a9-49ee-810e-63e0dfd11479
+
+Waiting for build to complete. You can press Ctrl+C to exit.
+✖ Build failed
+
+🍏 iOS build failed:
+Unknown error. See logs of the Install dependencies build phase for more information.
+➜  artifacts git:(main) ✗ 

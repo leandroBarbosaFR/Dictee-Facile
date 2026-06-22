@@ -4,7 +4,6 @@ import {
   Geist_800ExtraBold,
   useFonts,
 } from "@expo-google-fonts/geist";
-import { setBaseUrl } from "@workspace/api-client-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -17,7 +16,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { useColors } from "@/hooks/useColors";
 
-setBaseUrl(`https://${process.env.EXPO_PUBLIC_DOMAIN}`);
 
 SplashScreen.preventAutoHideAsync();
 
