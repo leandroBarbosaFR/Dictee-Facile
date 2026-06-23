@@ -18,7 +18,8 @@
       "bundleIdentifier": "com.1367studio.workspace",
       "infoPlist": {
         "NSCameraUsageDescription": "Pour scanner ta feuille de mots de dictée",
-        "NSPhotoLibraryUsageDescription": "Pour choisir une photo de ta feuille de dictée"
+        "NSPhotoLibraryUsageDescription": "Pour choisir une photo de ta feuille de dictée",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {},
