@@ -377,8 +377,8 @@ export default function DicteeScreen() {
         >
           {isPlaying ? (
             <>
-              <Ionicons name="volume-high" size={36} color="#FFFFFF" />
-              <Text style={styles.ecouterText}>
+              <Ionicons name="volume-high" size={36} color={colors.accentForeground} />
+              <Text style={[styles.ecouterText, { color: colors.accentForeground }]}>
                 {settings.repeterMot ? "Lecture..." : "En cours..."}
               </Text>
             </>
