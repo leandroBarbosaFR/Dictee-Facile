@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
 import React, { useCallback, useEffect, useState } from "react";
@@ -79,7 +80,11 @@ export default function HomeScreen() {
 
       <View style={styles.heroSection}>
         <View style={styles.logoMark}>
-          <Feather name="edit-3" size={40} color={colors.primaryForeground} />
+          <Image
+            source={require("@/assets/images/splash-icon.png")}
+            style={styles.logoImage}
+            contentFit="contain"
+          />
         </View>
         <Text style={styles.appTitle}>Les Mots{"\n"}Malins</Text>
         <Text style={styles.appSubtitle}>
@@ -217,18 +222,22 @@ function makeStyles(colors: ReturnType<typeof useColors>, insets: ReturnType<typ
       paddingVertical: 28,
     },
     logoMark: {
-      width: 72,
-      height: 72,
-      borderRadius: 20,
-      backgroundColor: colors.primary,
+      width: 88,
+      height: 88,
+      borderRadius: 24,
+      backgroundColor: colors.splash,
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 20,
       shadowColor: colors.primary,
       shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.3,
+      shadowOpacity: 0.2,
       shadowRadius: 12,
       elevation: 6,
+    },
+    logoImage: {
+      width: 72,
+      height: 72,
     },
     appTitle: {
       fontFamily: "Geist_800ExtraBold",

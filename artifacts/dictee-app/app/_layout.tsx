@@ -18,6 +18,11 @@ import { useColors } from "@/hooks/useColors";
 
 
 SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({ duration: 500, fade: true });
+
+// Keep the splash visible long enough to actually see the mascot.
+const SPLASH_MIN_MS = 2000;
+const splashShownAt = Date.now();
 
 const queryClient = new QueryClient();
 
@@ -58,7 +63,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
+      const remaining = SPLASH_MIN_MS - (Date.now() - splashShownAt);
+      const timer = setTimeout(() => SplashScreen.hideAsync(), Math.max(0, remaining));
+      return () => clearTimeout(timer);
     }
   }, [fontsLoaded, fontError]);
 
